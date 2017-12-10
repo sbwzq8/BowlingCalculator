@@ -1,0 +1,15 @@
+C:\Users\MiniTron\source\repos\Bowling calculator\Bowling calculator\bin\Debug\Bowling calculator.exe.config
+C:\Users\MiniTron\source\repos\Bowling calculator\Bowling calculator\bin\Debug\Bowling calculator.exe
+C:\Users\MiniTron\source\repos\Bowling calculator\Bowling calculator\bin\Debug\Bowling calculator.pdb
+C:\Users\MiniTron\source\repos\Bowling calculator\Bowling calculator\obj\Debug\Bowling calculator.csprojResolveAssemblyReference.cache
+C:\Users\MiniTron\source\repos\Bowling calculator\Bowling calculator\obj\Debug\MainWindow.g.cs
+C:\Users\MiniTron\source\repos\Bowling calculator\Bowling calculator\obj\Debug\App.g.cs
+C:\Users\MiniTron\source\repos\Bowling calculator\Bowling calculator\obj\Debug\Bowling calculator_MarkupCompile.cache
+C:\Users\MiniTron\source\repos\Bowling calculator\Bowling calculator\obj\Debug\Bowling calculator_MarkupCompile.lref
+C:\Users\MiniTron\source\repos\Bowling calculator\Bowling calculator\obj\Debug\MainWindow.baml
+C:\Users\MiniTron\source\repos\Bowling calculator\Bowling calculator\obj\Debug\Bowling calculator.g.resources
+C:\Users\MiniTron\source\repos\Bowling calculator\Bowling calculator\obj\Debug\Bowling_calculator.Properties.Resources.resources
+C:\Users\MiniTron\source\repos\Bowling calculator\Bowling calculator\obj\Debug\Bowling calculator.csproj.GenerateResource.Cache
+C:\Users\MiniTron\source\repos\Bowling calculator\Bowling calculator\obj\Debug\Bowling calculator.csproj.CoreCompileInputs.cache
+C:\Users\MiniTron\source\repos\Bowling calculator\Bowling calculator\obj\Debug\Bowling calculator.exe
+C:\Users\MiniTron\source\repos\Bowling calculator\Bowling calculator\obj\Debug\Bowling calculator.pdb
