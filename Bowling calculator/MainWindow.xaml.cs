@@ -29,7 +29,10 @@ namespace Bowling_calculator
         //int maxBalls = 21;
         //int currentBall = 0;
         int currentFrame = 0;
-        bool frameGetsSpare = false;
+        int currentScoringFrame = 0;
+        int score = 0;
+        bool frameGetsExtraBall = false;
+        
 
 
         public MainWindow()
@@ -43,60 +46,232 @@ namespace Bowling_calculator
             //Button btn = (Button)sender;
             //string g = btn.Content.ToString();
             string s = (sender as Button).Content.ToString();
-            if( (frameGetsSpare == false) && (s == "/") )
+            //Frame frame = frames[currentFrame];
+
+            if(currentFrame < 9)
             {
-                return;
-            }
-            if( currentFrame < 9 && s == "-" && frameGetsSpare == false)
-            {
-                frames[currentFrame].Ball1 = 0;
-                frames[currentFrame].Label.Content = "-";
-                frameGetsSpare = true;
-                return;
-            }
-            if( currentFrame < 9 && s == "-" && frameGetsSpare == true)
-            {
-                frames[currentFrame].Ball2 = 0;
-                frames[currentFrame].Label.Content += " -";
-                currentFrame += 1;
-                frameGetsSpare = false;
-                return;
-            }
-            if (currentFrame < 9 && frameGetsSpare == false && s == "X")
-            {
-                frames[currentFrame].Ball1 = 10;
-                frames[currentFrame].Label.Content = "X";
-                currentFrame += 1;
-                return;
-            }
-            if(currentFrame < 9 && frameGetsSpare == true && s == "/")
-            {
-                frames[currentFrame].Ball2 = 10;
-                frames[currentFrame].Label.Content += " /";
-                currentFrame += 1;
-                frameGetsSpare = false;
-                return;
-            }
-            if (currentFrame < 9 && frameGetsSpare == false && s != "X")
-            {
-                frames[currentFrame].Ball1 = int.Parse(s);
-                frames[currentFrame].Label.Content = s;
-                frameGetsSpare = true;
-                return;
-            }
-            if(currentFrame < 9 && frameGetsSpare == true && s != "/")
-            {
-                int.TryParse(frames[currentFrame].Label.Content.ToString(), out int ball);
-                if (s == "X" || ( ball + int.Parse(s) > 9 ) )
+                Frame frame = frames[currentFrame];
+                if (frame.Ball1 == null)
                 {
+                    switch (s)
+                    {
+                        case "-":
+                            frame.Ball1 = 0;
+                            frame.Label.Content = s;
+                            break;
+                        case "X":
+                            frame.Ball1 = 10;
+                            frame.Label.Content = s;
+                            currentFrame += 1;
+                            break;
+                        case "/":
+                            return;
+                        default:
+                            int pins;
+                            int.TryParse(s, out pins);
+                            frame.Ball1 = pins;
+                            frame.Label.Content = pins;
+                            break;
+                    }
                     return;
-                } 
-                frames[currentFrame].Ball2 = int.Parse(s);
-                frames[currentFrame].Label.Content += " " + s;
+                }
+                else
+                {
+                    int pins;
+                    int.TryParse(s, out pins);
+                    switch (s)
+                    {
+                        case "-":
+                            frame.Ball2 = 0;
+                            frame.Label.Content += " " + s;
+                            break;
+                        case "X":
+                            return;
+                        case "/":
+                            frame.Ball2 = 10 - pins;
+                            frame.Label.Content += " " + s;
+                            break;
+                        default:
+                            if(frame.Ball1 + pins > 9)
+                            {
+                                return;
+                            }
+                            frame.Ball2 = pins;
+                            frame.Label.Content += " " + s;
+                            break;
+                    }
+                }
                 currentFrame += 1;
-                frameGetsSpare = false;
-                return;
             }
+            else
+            {
+                TenthFrame frame = (TenthFrame)frames[currentFrame];
+                if(frame.Ball1 == null)
+                {
+                    switch (s)
+                    {
+                        case "-":
+                            frame.Ball1 = 0;
+                            frame.Label.Content = s;
+                            break;
+                        case "X":
+                            frame.Ball1 = 10;
+                            frame.Label.Content = s;
+                            break;
+                        case "/":
+                            return;
+                        default:
+                            int pins;
+                            int.TryParse(s, out pins);
+                            frame.Ball1 = pins;
+                            frame.Label.Content = pins;
+                            break;
+                    }
+                    return;
+                }
+                else if(frame.Ball2 == null && frame.Ball1 != 10)
+                {
+                    int pins;
+                    int.TryParse(s, out pins);
+                    switch (s)
+                    {
+                        case "-":
+                            frame.Ball2 = 0;
+                            frame.Label.Content += " " + s;
+                            break;
+                        case "X":
+                            return;
+                        case "/":
+                            frame.Ball2 = 10 - pins;
+                            frame.Label.Content += " " + s;
+                            frameGetsExtraBall = true;
+                            break;
+                        default:
+                            if (frame.Ball1 + pins > 9)
+                            {
+                                return;
+                            }
+                            frame.Ball2 = pins;
+                            frame.Label.Content += " " + s;
+                            break;
+                    }
+                }
+                else if(frame.Ball2 == null && frame.Ball1 == 10)
+                {
+                    int pins;
+                    int.TryParse(s, out pins);
+                    frameGetsExtraBall = true;
+                    switch (s)
+                    {
+                        case "-":
+                            frame.Ball2 = 0;
+                            frame.Label.Content += " " + s;
+                            break;
+                        case "X":
+                            frame.Ball2 = 10;
+                            frame.Label.Content += " " + s;
+                            return;
+                        case "/":
+                            frame.Ball2 = 10 - pins;
+                            frame.Label.Content += " " + s;
+                            break;
+                        default:
+                            if (frame.Ball1 + pins > 9)
+                            {
+                                return;
+                            }
+                            frame.Ball2 = pins;
+                            frame.Label.Content += " " + s;
+                            break;
+                    }
+                }
+                else if(frame.Ball2 != null && frame.Ball2 != 10)
+                {
+                    int pins;
+                    int.TryParse(s, out pins);
+                    switch (s)
+                    {
+                        case "-":
+                            frame.Ball3 = 0;
+                            frame.Label.Content += " " + s;
+                            break;
+                        case "X":
+                            return;
+                        case "/":
+                            frame.Ball3 = 10 - pins;
+                            frame.Label.Content += " " + s;
+                            frameGetsExtraBall = true;
+                            break;
+                        default:
+                            if (frame.Ball2 + pins > 9)
+                            {
+                                return;
+                            }
+                            frame.Ball3 = pins;
+                            frame.Label.Content += " " + s;
+                            break;
+                    }
+                }
+            }
+            //if( (frameGetsSpare == false) && (s == "/") )
+            //{
+            //    return;
+            //}
+            //if( currentFrame < 9 && s == "-" && frameGetsSpare == false)
+            //{
+            //    frames[currentFrame].Ball1 = 0;
+            //    frames[currentFrame].Label.Content = "-";
+            //    frameGetsSpare = true;
+            //    return;
+            //}
+            //if( currentFrame < 9 && s == "-" && frameGetsSpare == true)
+            //{
+            //    frames[currentFrame].Ball2 = 0;
+            //    frames[currentFrame].Label.Content += " -";
+            //    currentFrame += 1;
+            //    frameGetsSpare = false;
+            //    return;
+            //}
+            //if (currentFrame < 9 && frameGetsSpare == false && s == "X")
+            //{
+            //    frames[currentFrame].Ball1 = 10;
+            //    frames[currentFrame].Label.Content = "X";
+            //    currentFrame += 1;
+            //    return;
+            //}
+            //if(currentFrame < 9 && frameGetsSpare == true && s == "/")
+            //{
+            //    frames[currentFrame].Ball2 = 10;
+            //    frames[currentFrame].Label.Content += " /";
+            //    currentFrame += 1;
+            //    frameGetsSpare = false;
+            //    return;
+            //}
+            //if (currentFrame < 9 && frameGetsSpare == false && s != "X")
+            //{
+            //    frames[currentFrame].Ball1 = int.Parse(s);
+            //    frames[currentFrame].Label.Content = s;
+            //    frameGetsSpare = true;
+            //    return;
+            //}
+            //if(currentFrame < 9 && frameGetsSpare == true && s != "/")
+            //{
+            //    int.TryParse(frames[currentFrame].Label.Content.ToString(), out int ball);
+            //    if (s == "X" || ( ball + int.Parse(s) > 9 ) )
+            //    {
+            //        return;
+            //    } 
+            //    frames[currentFrame].Ball2 = int.Parse(s);
+            //    frames[currentFrame].Label.Content += " " + s;
+            //    currentFrame += 1;
+            //    frameGetsSpare = false;
+            //    return;
+            //}
+
+            //if(currentFrame == 9 && frameGetsSpare == false)
+            //{
+
+            //}
 
         }
 
@@ -138,8 +313,8 @@ namespace Bowling_calculator
     }
     class Frame
     {
-        private int ball1;
-        private int ball2;
+        private int? ball1 = null;
+        private int? ball2 = null;
         private int rawFrameScore;
 
         //private bool wasStrike = false;
@@ -153,12 +328,12 @@ namespace Bowling_calculator
             this.label.VerticalAlignment = VerticalAlignment.Top;
         }
 
-        public int Ball1
+        public int? Ball1
         {
             get { return ball1; }
             set { ball1 = value; }
         }
-        public int Ball2
+        public int? Ball2
         {
             get { return ball2; }
             set { ball2 = value; }
@@ -177,14 +352,14 @@ namespace Bowling_calculator
 
     class TenthFrame : Frame
     {
-        private int ball3;
+        private int? ball3;
 
         public TenthFrame() : base()
         {
             
         }
 
-        public int Ball3
+        public int? Ball3
         {
             get { return ball3; }
             set { ball3 = value; }

@@ -20,7 +20,7 @@
         <Button Content="9" HorizontalAlignment="Left" Margin="122,96,0,0" VerticalAlignment="Top" Width="50" Height="50" BorderThickness="1" Click="Button_Click"/>
         <Button Content="X" HorizontalAlignment="Left" Margin="12,261,0,0" VerticalAlignment="Top" Width="50" Height="50" BorderThickness="1" Click="Button_Click"/>
         <Border x:Name="Frame1" BorderBrush="Black" Background="AliceBlue" BorderThickness="1" HorizontalAlignment="Left" Height="50" Margin="507,261,0,0" VerticalAlignment="Top" Width="50">
-            <Label Content="9"></Label>
+            <Label Content=""></Label>
             <!--<Grid x:Name="frame1Grid" VerticalAlignment="Stretch" HorizontalAlignment="Stretch"/>-->
         </Border>
 
