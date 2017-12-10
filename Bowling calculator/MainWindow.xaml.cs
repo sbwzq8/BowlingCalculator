@@ -23,15 +23,16 @@ namespace Bowling_calculator
 
         List<Label> frameLabels = new List<Label>();
         List<Frame> frames = new List<Frame>();
-        List<Border> borders = new List<Border>();
-        List<String> balls = new List<string>();
-
-        //int maxBalls = 21;
-        //int currentBall = 0;
+        //List<Border> borders = new List<Border>();
+        List<int?> balls = new List<int?>();
+        
         int currentFrame = 0;
+
         int currentScoringFrame = 0;
         int score = 0;
+
         bool frameGetsExtraBall = false;
+        bool doneBowling = false;
         
 
 
@@ -43,6 +44,17 @@ namespace Bowling_calculator
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
+            if(doneBowling == true)
+            {
+                TenthFrame tenth = (TenthFrame)frames[9];
+                foreach(Frame frame in frames)
+                {
+                    balls.Add(frame.Ball1);
+                    balls.Add(frame.Ball2);
+                }
+                balls.Add(tenth.Ball3);
+                return;
+            }
             //Button btn = (Button)sender;
             //string g = btn.Content.ToString();
             string s = (sender as Button).Content.ToString();
@@ -117,9 +129,10 @@ namespace Bowling_calculator
                         case "X":
                             frame.Ball1 = 10;
                             frame.Label.Content = s;
+                            frameGetsExtraBall = true;
                             break;
                         case "/":
-                            return;
+                            break;
                         default:
                             int pins;
                             int.TryParse(s, out pins);
@@ -138,9 +151,11 @@ namespace Bowling_calculator
                         case "-":
                             frame.Ball2 = 0;
                             frame.Label.Content += " " + s;
+                            frameGetsExtraBall = false;
+                            doneBowling = true;
                             break;
                         case "X":
-                            return;
+                            break;
                         case "/":
                             frame.Ball2 = 10 - pins;
                             frame.Label.Content += " " + s;
@@ -153,8 +168,11 @@ namespace Bowling_calculator
                             }
                             frame.Ball2 = pins;
                             frame.Label.Content += " " + s;
+                            frameGetsExtraBall = false;
+                            doneBowling = true;
                             break;
                     }
+                    return;
                 }
                 else if(frame.Ball2 == null && frame.Ball1 == 10)
                 {
@@ -170,46 +188,72 @@ namespace Bowling_calculator
                         case "X":
                             frame.Ball2 = 10;
                             frame.Label.Content += " " + s;
-                            return;
+                            break; ;
                         case "/":
-                            frame.Ball2 = 10 - pins;
-                            frame.Label.Content += " " + s;
-                            break;
+                            break; ;
                         default:
-                            if (frame.Ball1 + pins > 9)
-                            {
-                                return;
-                            }
                             frame.Ball2 = pins;
                             frame.Label.Content += " " + s;
                             break;
                     }
+                    return;
                 }
-                else if(frame.Ball2 != null && frame.Ball2 != 10)
+                else if (frameGetsExtraBall)
                 {
-                    int pins;
-                    int.TryParse(s, out pins);
-                    switch (s)
+                    if (frame.Ball2 == 10)
                     {
-                        case "-":
-                            frame.Ball3 = 0;
-                            frame.Label.Content += " " + s;
-                            break;
-                        case "X":
-                            return;
-                        case "/":
-                            frame.Ball3 = 10 - pins;
-                            frame.Label.Content += " " + s;
-                            frameGetsExtraBall = true;
-                            break;
-                        default:
-                            if (frame.Ball2 + pins > 9)
-                            {
+                        int pins;
+                        int.TryParse(s, out pins);
+                        switch (s)
+                        {
+                            case "-":
+                                frame.Ball3 = 0;
+                                frame.Label.Content += " " + s;
+                                doneBowling = true;
+                                break;
+                            case "X":
+                                frame.Ball3 = 10;
+                                frame.Label.Content += " " + s;
+                                doneBowling = true;
                                 return;
-                            }
-                            frame.Ball3 = pins;
-                            frame.Label.Content += " " + s;
-                            break;
+                            case "/":
+                                return;
+                            default:
+                                frame.Ball3 = pins;
+                                frame.Label.Content += " " + s;
+                                doneBowling = true;
+                                break;
+                        }
+                    }
+                    else
+                    {
+                        int pins;
+                        int.TryParse(s, out pins);
+                        switch (s)
+                        {
+                            case "-":
+                                frame.Ball3 = 0;
+                                frame.Label.Content += " " + s;
+                                doneBowling = true;
+                                break;
+                            case "X":
+                                return;
+                            case "/":
+                                if (frame.Ball2 + pins > 9)
+                                {
+                                    return;
+                                }
+                                frame.Ball3 = pins;
+                                frame.Label.Content += " " + s;
+                                frameGetsExtraBall = false;
+                                doneBowling = true;
+                                break;
+                            default:
+                                frame.Ball3 = pins;
+                                frame.Label.Content += " " + s;
+                                doneBowling = true;
+                                break;
+                        }
                     }
                 }
             }
@@ -275,6 +319,15 @@ namespace Bowling_calculator
 
         }
 
+        private void Button_Click_1(object sender, RoutedEventArgs e)
+        {
+            foreach(int? ball in balls)
+            {
+
+                //TestBox.Text += ball.ToString() + " ";
+            }
+        }
+
         private void populateGrid()
         {
             for(int i=0; i < 9; i++)
@@ -309,7 +362,6 @@ namespace Bowling_calculator
                 hSpacing += 55;
             }
         }
-
     }
     class Frame
     {

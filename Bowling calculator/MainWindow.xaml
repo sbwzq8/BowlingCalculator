@@ -23,6 +23,8 @@
             <Label Content=""></Label>
             <!--<Grid x:Name="frame1Grid" VerticalAlignment="Stretch" HorizontalAlignment="Stretch"/>-->
         </Border>
+        <TextBox x:Name="TestBox" HorizontalAlignment="Left" Height="100" Margin="226,146,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="301"/>
+        <Button Content="Button" HorizontalAlignment="Left" Height="50" Margin="203,261,0,0" VerticalAlignment="Top" Width="50" Click="Button_Click_1"/>
 
     </Grid>
 </Window>
