@@ -59,10 +59,12 @@ namespace Bowling_calculator
             //string g = btn.Content.ToString();
             string s = (sender as Button).Content.ToString();
             //Frame frame = frames[currentFrame];
-
+            
+            //Set ball values for first 9 frames
             if(currentFrame < 9)
             {
                 Frame frame = frames[currentFrame];
+                //Case for no ball thrown in frame yet. Don't allow spare button to be clicked
                 if (frame.Ball1 == null)
                 {
                     switch (s)
@@ -74,6 +76,7 @@ namespace Bowling_calculator
                         case "X":
                             frame.Ball1 = 10;
                             frame.Label.Content = s;
+                            frame.Strike = true;
                             currentFrame += 1;
                             break;
                         case "/":
@@ -87,6 +90,7 @@ namespace Bowling_calculator
                     }
                     return;
                 }
+                //Case for second ball in frame. First was not strike. Do not allow strike
                 else
                 {
                     int pins;
@@ -100,8 +104,9 @@ namespace Bowling_calculator
                         case "X":
                             return;
                         case "/":
-                            frame.Ball2 = 10 - pins;
+                            frame.Ball2 = 10 - frame.Ball1;
                             frame.Label.Content += " " + s;
+                            frame.Spare = true;
                             break;
                         default:
                             if(frame.Ball1 + pins > 9)
@@ -115,9 +120,11 @@ namespace Bowling_calculator
                 }
                 currentFrame += 1;
             }
+            //Handle cases for tenth frame
             else
             {
                 TenthFrame frame = (TenthFrame)frames[currentFrame];
+                //first ball not thrown in frame. Dont allow spare.
                 if(frame.Ball1 == null)
                 {
                     switch (s)
@@ -140,8 +147,9 @@ namespace Bowling_calculator
                             frame.Label.Content = pins;
                             break;
                     }
-                    return;
+                    //return;
                 }
+                //First ball not strike. Do not allow strike.
                 else if(frame.Ball2 == null && frame.Ball1 != 10)
                 {
                     int pins;
@@ -157,9 +165,11 @@ namespace Bowling_calculator
                         case "X":
                             break;
                         case "/":
+                            pins = (int)frame.Ball1;
                             frame.Ball2 = 10 - pins;
                             frame.Label.Content += " " + s;
                             frameGetsExtraBall = true;
+                            frame.SecondBallSpare = true;
                             break;
                         default:
                             if (frame.Ball1 + pins > 9)
@@ -172,8 +182,9 @@ namespace Bowling_calculator
                             doneBowling = true;
                             break;
                     }
-                    return;
+                    //return;
                 }
+                //first ball was strike, do not allow spare.
                 else if(frame.Ball2 == null && frame.Ball1 == 10)
                 {
                     int pins;
@@ -188,6 +199,7 @@ namespace Bowling_calculator
                         case "X":
                             frame.Ball2 = 10;
                             frame.Label.Content += " " + s;
+                            frame.SecondBallStrike = true;
                             break; ;
                         case "/":
                             break; ;
@@ -196,11 +208,13 @@ namespace Bowling_calculator
                             frame.Label.Content += " " + s;
                             break;
                     }
-                    return;
+                    //return;
                 }
+                //if first ball was strike, or second ball was spare or strike, handle 3rd ball.
                 else if (frameGetsExtraBall)
                 {
-                    if (frame.Ball2 == 10)
+                    //if second ball thrown was strike or spare, allow a strike. do not allow spare.
+                    if (frame.SecondBallStrike || frame.SecondBallSpare)
                     {
                         int pins;
                         int.TryParse(s, out pins);
@@ -225,6 +239,7 @@ namespace Bowling_calculator
                                 break;
                         }
                     }
+                    //handle for first ball strike and second ball not strike.
                     else
                     {
                         int pins;
@@ -243,6 +258,7 @@ namespace Bowling_calculator
                                 {
                                     return;
                                 }
+                                pins = 10 - (int)frame.Ball2;
                                 frame.Ball3 = pins;
                                 frame.Label.Content += " " + s;
                                 frameGetsExtraBall = false;
@@ -321,11 +337,25 @@ namespace Bowling_calculator
 
         private void Button_Click_1(object sender, RoutedEventArgs e)
         {
-            foreach(int? ball in balls)
+            for(int current = 0; current<frames.Count(); current++)
             {
+                TestBox.Text += frames[current].Ball1.ToString();
+                TestBox.Text += frames[current].Ball2.ToString();
+                if(current == 9)
+                {
+                    TenthFrame tenth = (TenthFrame)frames[current];
+                    TestBox.Text += tenth.Ball3.ToString();
+                }
 
-                //TestBox.Text += ball.ToString() + " ";
             }
+            //foreach(Frame frame in frames)
+            //{
+            //    if(frame.Strike == true)
+            //    {
+            //        if(frame)
+            //    }
+            //    //TestBox.Text += ball.ToString() + " ";
+            //}
         }
 
         private void populateGrid()
@@ -368,6 +398,8 @@ namespace Bowling_calculator
         private int? ball1 = null;
         private int? ball2 = null;
         private int rawFrameScore;
+        private bool strike;
+        private bool spare;
 
         //private bool wasStrike = false;
 
@@ -390,11 +422,22 @@ namespace Bowling_calculator
             get { return ball2; }
             set { ball2 = value; }
         }
-        //public bool WasStrike
-        //{
-        //    get { return wasStrike; }
-        //    set { wasStrike = value; }
-        //}
+        public int RawFrameScore
+        {
+            get { return rawFrameScore; }
+            set { rawFrameScore = value; }
+        }
+        public bool Strike
+        {
+            get { return strike; }
+            set { strike = value; }
+        }
+        public bool Spare
+        {
+            get { return spare; }
+            set { spare = value; }
+        }
+
         public Label Label
         {
             get { return label; }
@@ -405,6 +448,8 @@ namespace Bowling_calculator
     class TenthFrame : Frame
     {
         private int? ball3;
+        private bool secondBallStrike;
+        private bool secondBallSpare;
 
         public TenthFrame() : base()
         {
@@ -415,6 +460,16 @@ namespace Bowling_calculator
         {
             get { return ball3; }
             set { ball3 = value; }
+        }
+        public bool SecondBallStrike
+        {
+            get { return secondBallStrike; }
+            set { secondBallStrike = value; }
+        }
+        public bool SecondBallSpare
+        {
+            get { return secondBallSpare; }
+            set { secondBallSpare = value; }
         }
     }
 }
