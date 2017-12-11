@@ -19,7 +19,7 @@
         <Button Content="8" HorizontalAlignment="Left" Margin="67,0,0,67" VerticalAlignment="Bottom" Width="50" Height="50" BorderThickness="1" Click="Button_Click"/>
         <Button Content="9" HorizontalAlignment="Left" Margin="122,0,0,67" VerticalAlignment="Bottom" Width="50" Height="50" BorderThickness="1" Click="Button_Click"/>
         <Button Content="X" HorizontalAlignment="Left" Margin="12,0,0,12" VerticalAlignment="Bottom" Width="50" Height="50" BorderThickness="1" Click="Button_Click"/>
-        <Button Content="Button" HorizontalAlignment="Left" Height="50" Margin="177,0,0,12" VerticalAlignment="Bottom" Width="50" Click="Button_Click_2"/>
-
+        <Button Content="Finish" HorizontalAlignment="Left" Height="50" Margin="177,0,0,12" VerticalAlignment="Bottom" Width="50" Click="Button_Click_2"/>
+        <Image x:Name="bowlingImage" HorizontalAlignment="Right" Height="200" Margin="0,0,11.667,12" VerticalAlignment="Bottom" Width="200"/>
     </Grid>
 </Window>

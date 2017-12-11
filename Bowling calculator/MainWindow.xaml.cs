@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -25,6 +26,7 @@ namespace Bowling_calculator
         //List<Border> borders = new List<Border>();
         //List<int?> balls = new List<int?>();
 
+        //initialize lists for storing frame scores
         List<Frame> frames = new List<Frame>();
         List<Label> scoreFrames = new List<Label>();
 
@@ -270,21 +272,26 @@ namespace Bowling_calculator
 
         private void Button_Click_2(object sender, RoutedEventArgs e)
         {
-            calculateFrameScores();
+            if (calculateFrameScores() == -1)
+            {
+                return;
+            }
             score = 0;
             
+            //find game final score
             foreach(Frame frame in frames)
             {
                 score += frame.RawFrameScore;
             }
+            //fill score frames with final values
             for(int i = 0; i <= currentFrame; i++)
             {
-                scoreFrames[i].Content = frames[i].RawFrameScore;
+                scoreFrames[i].Content = frames[i].FinalFrameScore;
             }
             MessageBox.Show("Total score is " + score);
         }
 
-        private void calculateFrameScores()
+        private int calculateFrameScores()
         {
             try
             {
@@ -355,11 +362,25 @@ namespace Bowling_calculator
                         frames[current].RawFrameScore = (int)frames[current].Ball1 + (int)frames[current].Ball2 + (int)tenth.Ball3;
                     }
                 }
+                //calculate final scores for each frame
+                for(int i = 0; i <= currentFrame; i++)
+                {
+                    if(i == 0)
+                    {
+                        frames[i].FinalFrameScore = frames[i].RawFrameScore;
+                    }
+                    else
+                    {
+                        frames[i].FinalFrameScore = frames[i - 1].FinalFrameScore + frames[i].RawFrameScore;
+                    }
+                }
             }
             catch
             {
                 MessageBox.Show("Error, must finish before scoring");
+                return -1;
             }
+            return 0;
         }
 
         private void populateGrid()
@@ -419,6 +440,7 @@ namespace Bowling_calculator
         private int? ball1 = null;
         private int? ball2 = null;
         private int rawFrameScore;
+        private int finalFrameScore;
         private bool strike;
         private bool spare;
 
@@ -444,6 +466,11 @@ namespace Bowling_calculator
         {
             get { return rawFrameScore; }
             set { rawFrameScore = value; }
+        }
+        public int FinalFrameScore
+        {
+            get { return finalFrameScore; }
+            set { finalFrameScore = value; }
         }
         public bool Strike
         {
