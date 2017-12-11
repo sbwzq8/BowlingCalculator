@@ -21,14 +21,14 @@ namespace Bowling_calculator
     public partial class MainWindow : Window
     {
 
-        List<Label> frameLabels = new List<Label>();
-        List<Frame> frames = new List<Frame>();
+        //List<Label> frameLabels = new List<Label>();
         //List<Border> borders = new List<Border>();
-        List<int?> balls = new List<int?>();
-        
-        int currentFrame = 0;
+        //List<int?> balls = new List<int?>();
 
-        int currentScoringFrame = 0;
+        List<Frame> frames = new List<Frame>();
+        List<Label> scoreFrames = new List<Label>();
+
+        int currentFrame = 0;
         int score = 0;
 
         bool frameGetsExtraBall = false;
@@ -46,13 +46,6 @@ namespace Bowling_calculator
         {
             if(doneBowling == true)
             {
-                TenthFrame tenth = (TenthFrame)frames[9];
-                foreach(Frame frame in frames)
-                {
-                    balls.Add(frame.Ball1);
-                    balls.Add(frame.Ball2);
-                }
-                balls.Add(tenth.Ball3);
                 return;
             }
             //Button btn = (Button)sender;
@@ -273,122 +266,150 @@ namespace Bowling_calculator
                     }
                 }
             }
-            //if( (frameGetsSpare == false) && (s == "/") )
-            //{
-            //    return;
-            //}
-            //if( currentFrame < 9 && s == "-" && frameGetsSpare == false)
-            //{
-            //    frames[currentFrame].Ball1 = 0;
-            //    frames[currentFrame].Label.Content = "-";
-            //    frameGetsSpare = true;
-            //    return;
-            //}
-            //if( currentFrame < 9 && s == "-" && frameGetsSpare == true)
-            //{
-            //    frames[currentFrame].Ball2 = 0;
-            //    frames[currentFrame].Label.Content += " -";
-            //    currentFrame += 1;
-            //    frameGetsSpare = false;
-            //    return;
-            //}
-            //if (currentFrame < 9 && frameGetsSpare == false && s == "X")
-            //{
-            //    frames[currentFrame].Ball1 = 10;
-            //    frames[currentFrame].Label.Content = "X";
-            //    currentFrame += 1;
-            //    return;
-            //}
-            //if(currentFrame < 9 && frameGetsSpare == true && s == "/")
-            //{
-            //    frames[currentFrame].Ball2 = 10;
-            //    frames[currentFrame].Label.Content += " /";
-            //    currentFrame += 1;
-            //    frameGetsSpare = false;
-            //    return;
-            //}
-            //if (currentFrame < 9 && frameGetsSpare == false && s != "X")
-            //{
-            //    frames[currentFrame].Ball1 = int.Parse(s);
-            //    frames[currentFrame].Label.Content = s;
-            //    frameGetsSpare = true;
-            //    return;
-            //}
-            //if(currentFrame < 9 && frameGetsSpare == true && s != "/")
-            //{
-            //    int.TryParse(frames[currentFrame].Label.Content.ToString(), out int ball);
-            //    if (s == "X" || ( ball + int.Parse(s) > 9 ) )
-            //    {
-            //        return;
-            //    } 
-            //    frames[currentFrame].Ball2 = int.Parse(s);
-            //    frames[currentFrame].Label.Content += " " + s;
-            //    currentFrame += 1;
-            //    frameGetsSpare = false;
-            //    return;
-            //}
-
-            //if(currentFrame == 9 && frameGetsSpare == false)
-            //{
-
-            //}
-
         }
 
-        private void Button_Click_1(object sender, RoutedEventArgs e)
+        private void Button_Click_2(object sender, RoutedEventArgs e)
         {
-            for(int current = 0; current<frames.Count(); current++)
+            calculateFrameScores();
+            score = 0;
+            
+            foreach(Frame frame in frames)
             {
-                TestBox.Text += frames[current].Ball1.ToString();
-                TestBox.Text += frames[current].Ball2.ToString();
-                if(current == 9)
-                {
-                    TenthFrame tenth = (TenthFrame)frames[current];
-                    TestBox.Text += tenth.Ball3.ToString();
-                }
-
+                score += frame.RawFrameScore;
             }
-            //foreach(Frame frame in frames)
-            //{
-            //    if(frame.Strike == true)
-            //    {
-            //        if(frame)
-            //    }
-            //    //TestBox.Text += ball.ToString() + " ";
-            //}
+            for(int i = 0; i <= currentFrame; i++)
+            {
+                scoreFrames[i].Content = frames[i].RawFrameScore;
+            }
+            MessageBox.Show("Total score is " + score);
+        }
+
+        private void calculateFrameScores()
+        {
+            try
+            {
+                for (int current = 0; current < frames.Count(); current++)
+                {
+                    //handle all frames before 9th frame
+                    if (current < 8)
+                    {
+                        //handle frame was strike, next 2 balls added to frame score
+                        if (frames[current].Strike)
+                        {
+                            //next frame was spare, set current frame score to 20
+                            if (frames[current + 1].Spare)
+                            {
+                                frames[current].RawFrameScore = 20;
+                            }
+                            //next 2 frames are strikes, set current frame score to 30
+                            else if (frames[current + 1].Strike && frames[current + 2].Strike)
+                            {
+                                frames[current].RawFrameScore = 30;
+                            }
+                            //next frame strike, frame afterwards was not. Add 10 for strike and number of pins knocked down by first ball 2 frames ahead
+                            else if (frames[current + 1].Strike && !frames[current + 2].Strike)
+                            {
+                                frames[current].RawFrameScore = 10 + 10 + (int)frames[current + 2].Ball1;
+                            }
+                            //Next frame not strike or spare, add both balls to frame score
+                            else
+                            {
+                                frames[current].RawFrameScore = 10 + (int)frames[current + 1].Ball1 + (int)frames[current + 1].Ball2;
+                            }
+                        }
+                        //handle frame was spare, next ball added to frame score
+                        else if (frames[current].Spare)
+                        {
+                            frames[current].RawFrameScore = 10 + (int)frames[current + 1].Ball1;
+                        }
+                        //handle frame was neither strike nor spare, frame score is just both balls added together.
+                        else
+                        {
+                            frames[current].RawFrameScore = (int)frames[current].Ball1 + (int)frames[current].Ball2;
+                        }
+                    }
+                    //handle 9th frame
+                    if (current == 8)
+                    {
+                        //9th frame strike. Add first 2 10th frame balls to score
+                        if (frames[current].Strike)
+                        {
+                            frames[current].RawFrameScore = 10 + (int)frames[current + 1].Ball1 + (int)frames[current + 1].Ball2;
+                        }
+                        //9th frame spare, add first ball of 10th frame to score
+                        else if (frames[current].Spare)
+                        {
+                            frames[current].RawFrameScore = 10 + (int)frames[current + 1].Ball1;
+                        }
+                        //9th frame neither strike nor spare, add both balls to final score
+                        else
+                        {
+                            frames[current].RawFrameScore = (int)frames[current].Ball1 + (int)frames[current].Ball2;
+                        }
+                    }
+                    //grab tenth frame casted as TenthFrame object
+                    TenthFrame tenth = (TenthFrame)frames[9];
+                    //10th frame, just add all 3 balls to score
+                    if (current == 9)
+                    {
+                        frames[current].RawFrameScore = (int)frames[current].Ball1 + (int)frames[current].Ball2 + (int)tenth.Ball3;
+                    }
+                }
+            }
+            catch
+            {
+                MessageBox.Show("Error, must finish before scoring");
+            }
         }
 
         private void populateGrid()
         {
+            //create frame objects and add them to frames list
             for(int i=0; i < 9; i++)
             {
                 Frame frame = new Frame();
                 frames.Add(frame);
             }
-            Frame frame10 = new TenthFrame();
-            frames.Add(frame10);
+            Frame tenth = new TenthFrame();
+            frames.Add(tenth);
 
+            for(int i = 0; i < 10; i++)
+            {
+                Label label = new Label();
+                scoreFrames.Add(label);
+            }
+
+            //programatically create UI elements for frames
             for(int i = 0, hSpacing = 12; i<10; i++)
             {
-                //Label label = new Label();
-
-                //label.HorizontalContentAlignment = HorizontalAlignment.Center;
-                //label.VerticalContentAlignment = VerticalAlignment.Center;
-                //label.Content = 9;
-
+                //add frames to borders
                 Border border = new Border();
                 border.BorderBrush = Brushes.Black;
                 //border.Padding = new Thickness(0);
                 border.BorderThickness = new Thickness(1);
-                border.Margin = new Thickness(hSpacing, 40, 0, 0);
+                border.Margin = new Thickness(hSpacing, 0, 0, 287);
                 border.Width = 50;
                 border.Height = 50;
                 border.HorizontalAlignment = HorizontalAlignment.Left;
-                border.VerticalAlignment = VerticalAlignment.Top;
+                border.VerticalAlignment = VerticalAlignment.Bottom;
 
                 border.Child = frames[i].Label;
 
+                //add final frame score elements to borders
+                Border scoringBorder = new Border();
+                scoringBorder.BorderBrush = Brushes.Black;
+                scoringBorder.BorderThickness = new Thickness(1);
+                scoringBorder.Margin = new Thickness(hSpacing, 0, 0, 232);
+                scoringBorder.Width = 50;
+                scoringBorder.Height = 50;
+                scoringBorder.HorizontalAlignment = HorizontalAlignment.Left;
+                scoringBorder.VerticalAlignment = VerticalAlignment.Bottom;
+
+                scoringBorder.Child = scoreFrames[i];
+
+                //add borders to grid
                 mainGrid.Children.Add(border);
+                mainGrid.Children.Add(scoringBorder);
                 hSpacing += 55;
             }
         }
@@ -401,13 +422,10 @@ namespace Bowling_calculator
         private bool strike;
         private bool spare;
 
-        //private bool wasStrike = false;
-
         private Label label = new Label();
 
         public Frame()
         {
-            //label.Content = "X";
             this.label.HorizontalAlignment = HorizontalAlignment.Right;
             this.label.VerticalAlignment = VerticalAlignment.Top;
         }
@@ -447,7 +465,7 @@ namespace Bowling_calculator
 
     class TenthFrame : Frame
     {
-        private int? ball3;
+        private int? ball3 = 0;
         private bool secondBallStrike;
         private bool secondBallSpare;
 
