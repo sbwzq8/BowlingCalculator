@@ -42,6 +42,20 @@ namespace Bowling_calculator
         {
             InitializeComponent();
             populateGrid();
+
+            bowlingImageCanvas.Children.Clear();
+            Image myImage = new Image();
+            string path = System.IO.Path.Combine(Environment.CurrentDirectory, "bowling.jpg");
+
+            BitmapImage myBitmapImage = new BitmapImage();
+            myBitmapImage.BeginInit();
+            myBitmapImage.UriSource = new Uri(path);
+            //myBitmapImage.DecodePixelWidth = 128;
+            myBitmapImage.EndInit();
+            myImage.Source = myBitmapImage;
+            myImage.Width = 215;
+            bowlingImageCanvas.Children.Add(myImage);
+
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
@@ -260,6 +274,10 @@ namespace Bowling_calculator
                                 doneBowling = true;
                                 break;
                             default:
+                                if (frame.Ball2 + pins > 9)
+                                {
+                                    return;
+                                }
                                 frame.Ball3 = pins;
                                 frame.Label.Content += " " + s;
                                 doneBowling = true;
@@ -270,7 +288,7 @@ namespace Bowling_calculator
             }
         }
 
-        private void Button_Click_2(object sender, RoutedEventArgs e)
+        private void Button_Click_1(object sender, RoutedEventArgs e)
         {
             if (calculateFrameScores() == -1)
             {
@@ -289,6 +307,33 @@ namespace Bowling_calculator
                 scoreFrames[i].Content = frames[i].FinalFrameScore;
             }
             MessageBox.Show("Total score is " + score);
+        }
+
+        //reset button
+        private void Button_Click_2(object sender, RoutedEventArgs e)
+        {
+            currentFrame = 0;
+            score = 0;
+
+            frameGetsExtraBall = false;
+            doneBowling = false;
+
+            foreach (Frame frame in frames)
+            {
+                frame.Ball1 = null;
+                frame.Ball2 = null;
+                frame.RawFrameScore = 0;
+                frame.FinalFrameScore = 0;
+                frame.Strike = false;
+                frame.Spare = false;
+                frame.Label.Content = "";
+            }
+            TenthFrame tenth = (TenthFrame)frames[9];
+            tenth.Ball3 = 0;
+            foreach(Label label in scoreFrames)
+            {
+                label.Content = "";
+            }
         }
 
         private int calculateFrameScores()
@@ -433,88 +478,6 @@ namespace Bowling_calculator
                 mainGrid.Children.Add(scoringBorder);
                 hSpacing += 55;
             }
-        }
-    }
-    class Frame
-    {
-        private int? ball1 = null;
-        private int? ball2 = null;
-        private int rawFrameScore;
-        private int finalFrameScore;
-        private bool strike;
-        private bool spare;
-
-        private Label label = new Label();
-
-        public Frame()
-        {
-            this.label.HorizontalAlignment = HorizontalAlignment.Right;
-            this.label.VerticalAlignment = VerticalAlignment.Top;
-        }
-
-        public int? Ball1
-        {
-            get { return ball1; }
-            set { ball1 = value; }
-        }
-        public int? Ball2
-        {
-            get { return ball2; }
-            set { ball2 = value; }
-        }
-        public int RawFrameScore
-        {
-            get { return rawFrameScore; }
-            set { rawFrameScore = value; }
-        }
-        public int FinalFrameScore
-        {
-            get { return finalFrameScore; }
-            set { finalFrameScore = value; }
-        }
-        public bool Strike
-        {
-            get { return strike; }
-            set { strike = value; }
-        }
-        public bool Spare
-        {
-            get { return spare; }
-            set { spare = value; }
-        }
-
-        public Label Label
-        {
-            get { return label; }
-            set { label = value; }
-        }
-    }
-
-    class TenthFrame : Frame
-    {
-        private int? ball3 = 0;
-        private bool secondBallStrike;
-        private bool secondBallSpare;
-
-        public TenthFrame() : base()
-        {
-            
-        }
-
-        public int? Ball3
-        {
-            get { return ball3; }
-            set { ball3 = value; }
-        }
-        public bool SecondBallStrike
-        {
-            get { return secondBallStrike; }
-            set { secondBallStrike = value; }
-        }
-        public bool SecondBallSpare
-        {
-            get { return secondBallSpare; }
-            set { secondBallSpare = value; }
         }
     }
 }
